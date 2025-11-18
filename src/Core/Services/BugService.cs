@@ -18,19 +18,31 @@ public class BugService : IBugService
 
     public async Task<BugReadDto> AddAsync(BugCreateDto dto, CancellationToken token)
     {
-        var entity = dto.ToEntity();
+        _logger.LogInformation("Creation request for Bug with Species '{Species}'", dto.Species);
 
+        var entity = dto.ToEntity();
         await _repo.AddAsync(entity, token);
+
+        _logger.LogInformation("Bug {BugSpecies} successfully created", entity.Species);
 
         return entity.ToDto();
     }
 
     public async Task<bool> DeleteAsync(Guid id, CancellationToken token)
     {
+        _logger.LogInformation("Delete request for Bug {BugId}", id);
+
         var entity = await _repo.GetByIdAsync(id, token);
-        if (entity is null) return false;
+        if (entity is null) 
+        { 
+            _logger.LogWarning("No Bug with id {BugId} found. Deletion unsuccessful", id);
+            return false;
+        }
 
         await _repo.DeleteAsync(entity, token);
+
+        _logger.LogInformation("Bug with id {BugId} successfully deleted", id);
+
         return true;
     }
 
@@ -48,14 +60,22 @@ public class BugService : IBugService
 
     public async Task<bool> UpdateAsync(BugUpdateDto dto, CancellationToken token)
     {
+        _logger.LogInformation("Update request for Bug {BugId}", dto.Id);
+
         var entity = await _repo.GetByIdAsync(dto.Id, token);
-        if (entity is null) { return false; }
+        if (entity is null) 
+        { 
+            _logger.LogWarning("Cannot update Bug {BugId}: not found", dto.Id);
+            return false; 
+        }
 
         entity.Species = dto.Species.Trim();
         entity.DangerLevel = dto.DangerLevel;
         entity.Description = dto.Description;
 
         await _repo.UpdateAsync(entity, token);
+
+        _logger.LogInformation("Bug {BugId} updated successfully", dto.Id);
         return true;
     }
 }
