@@ -76,7 +76,7 @@ public class SightingService : ISightingService
         var entity = await _repo.GetByIdAsync(dto.Id, token);
         if (entity is null) 
         { 
-            _logger.LogWarning("Cannot udpdate Sighting {SightingId}: not found", id);
+            _logger.LogWarning("Cannot udpdate Sighting {SightingId}: not found", dto.Id);
             return false;     
         }
 
