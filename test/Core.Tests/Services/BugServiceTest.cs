@@ -26,7 +26,6 @@ public class BugServiceTests
 
     public BugServiceTests()
     {
-
         _logger = new Mock<ILogger<BugService>>();
         _repo = new Mock<IRepository<Bug>>();
         _svc = new BugService(_logger.Object, _repo.Object);        
@@ -72,6 +71,23 @@ public class BugServiceTests
         Assert.Null(result);
     }
 
+    [Fact]
+    public async Task GetByIdAsync_IdFound_ReturnsBug()
+    {
+        var existing = MakeBug();
+
+        _repo.Setup(x => x.GetByIdAsync(existing.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(existing);
+
+        var result = await _svc.GetByIdAsync(existing.Id, CancellationToken.None);
+
+        Assert.NotNull(result);
+        Assert.Equal(result?.Id, existing.Id);
+        Assert.Equal(result?.Species, existing.Species);
+
+        _repo.Verify(x => x.GetByIdAsync(existing.Id, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
 #endregion
 
 #region ListAsync
@@ -87,6 +103,37 @@ public class BugServiceTests
 
         Assert.Equal(2, allBugs.Count);
         Assert.True(allBugs.All(x => list.Any(b => b.Id == x.Id)));
+    }
+#endregion
+
+#region DeleteAsync
+
+    [Fact]
+    public async Task DeleteAsync_NotFound_ReturnsFalse()
+    {
+        _repo.Setup(x => x.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Bug?)null);
+
+        var ok = await _svc.DeleteAsync(Guid.NewGuid(), CancellationToken.None);
+
+        Assert.False(ok);
+        _repo.Verify(x => x.DeleteAsync(It.IsAny<Bug>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task DeleteAsync_Found_ReturnsTrue()
+    {
+        var existing = MakeBug();
+
+        _repo.Setup(x => x.GetByIdAsync(existing.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(existing);
+        _repo.Setup(x => x.DeleteAsync(existing, It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        var ok = await _svc.DeleteAsync(existing.Id, CancellationToken.None);
+
+        Assert.True(ok);
+        _repo.Verify(x => x.DeleteAsync(existing, It.IsAny<CancellationToken>()), Times.Once);
     }
 
 #endregion
