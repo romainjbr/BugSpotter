@@ -7,28 +7,55 @@ namespace Core.Services;
 
 public class BugService : IBugService
 {
-    public Task<BugReadDto> AddAsync(BugCreateDto dto, CancellationToken token)
+    readonly ILogger<BugService> _logger;
+    readonly IRepository<Bug> _repo;
+
+    public BugService(ILogger<BugService> logger, IRepository<Bug> repo)
     {
-        throw new NotImplementedException();
+        _logger = logger;
+        _repo = repo;
     }
 
-    public Task<bool> DeleteAsync(Guid id, CancellationToken token)
+    public async Task<BugReadDto> AddAsync(BugCreateDto dto, CancellationToken token)
     {
-        throw new NotImplementedException();
+        var entity = dto.ToEntity();
+
+        await _repo.AddAsync(entity, token);
+
+        return entity.ToDto();
     }
 
-    public Task<BugReadDto?> GetByIdAsync(Guid id, CancellationToken token)
+    public async Task<bool> DeleteAsync(Guid id, CancellationToken token)
     {
-        throw new NotImplementedException();
+        var entity = await _repo.GetByIdAsync(id, token);
+        if (entity is null) return false;
+
+        await _repo.DeleteAsync(entity, token);
+        return true;
     }
 
-    public Task<List<BugReadDto>> ListAsync(CancellationToken token)
+    public async Task<BugReadDto?> GetByIdAsync(Guid id, CancellationToken token)
     {
-        throw new NotImplementedException();
+        var entity = await _repo.GetByIdAsync(id, token);
+        return entity?.ToDto();
     }
 
-    public Task<bool> UpdateAsync(BugUpdateDto dto, CancellationToken token)
+    public async Task<List<BugReadDto>> ListAsync(CancellationToken token)
     {
-        throw new NotImplementedException();
+        var bugList = await _repo.ListAsync(token);
+        return bugList.Select(x => x.ToDto()).ToList();    
+    }
+
+    public async Task<bool> UpdateAsync(BugUpdateDto dto, CancellationToken token)
+    {
+        var entity = await _repo.GetByIdAsync(dto.Id, token);
+        if (entity is null) { return false; }
+
+        entity.Species = dto.Species.Trim();
+        entity.DangerLevel = dto.DangerLevel;
+        entity.Description = dto.Description;
+
+        await _repo.UpdateAsync(entity, token);
+        return true;
     }
 }
