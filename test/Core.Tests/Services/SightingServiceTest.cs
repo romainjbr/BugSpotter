@@ -49,11 +49,109 @@ public class SightingServiceTests
             Notes: "Moved closer to the window"
         );
 
-    private static Bug MakeBug() => new()
+    private static Bug MakeBug(Guid? id = null) => new()
     {
-        Id = Guid.NewGuid(),
+        Id = id ?? Guid.NewGuid(),
         Species = "Wasp",
         DangerLevel = 3,
         Description = "Stingy"
     };
+
+    public SightingServiceTests()
+    {
+        _logger = new Mock<ILogger<SightingService>>();
+        _repo = new Mock<IRepository<Sighting>>();
+        _bugRepo = new Mock<IRepository<Bug>>();
+        _svc = new SightingService(_logger.Object, _repo.Object, _bugRepo.Object);
+    }
+
+    #region AddAsync
+
+    [Fact]
+    public async Task AddAsync_BugNotFound_ReturnsNull_AndDoesNotCallRepoAdd()
+    {
+        var dto = MakeCreateDto();
+
+        _bugRepo.Setup(x => x.GetByIdAsync(dto.BugId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Bug?)null);
+
+        var result = await _svc.AddAsync(dto, CancellationToken.None);
+
+        Assert.Null(result);
+        _repo.Verify(x => x.AddAsync(It.IsAny<Sighting>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task AddAsync_BugFound_CallsRepoAndReturnsDto()
+    {
+        var dto = MakeCreateDto();
+        var bug = MakeBug(dto.BugId);
+
+        _bugRepo.Setup(x => x.GetByIdAsync(dto.BugId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(bug);
+
+        _repo.Setup(x => x.AddAsync(It.IsAny<Sighting>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        var result = await _svc.AddAsync(dto, CancellationToken.None);
+
+        _repo.Verify(x => x.AddAsync(
+                It.Is<Sighting>(s =>
+                    s.BugId == dto.BugId &&
+                    s.UserId == dto.UserId &&
+                    s.Latitude == dto.Latitude &&
+                    s.Longitude == dto.Longitude &&
+                    s.SeenAt == dto.SeenAt &&
+                    s.Notes == dto.Notes),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+
+        Assert.NotNull(result);
+        Assert.Equal(dto.BugId, result!.BugId);
+        Assert.Equal(dto.UserId, result.UserId);
+        Assert.Equal(dto.Latitude, result.Latitude);
+        Assert.Equal(dto.Longitude, result.Longitude);
+        Assert.Equal(dto.SeenAt, result.SeenAt);
+        Assert.Equal(dto.Notes, result.Notes);
+    }
+
+    #endregion
+
+    #region GetByIdAsync
+
+    [Fact]
+    public async Task GetByIdAsync_IdNotFound_ReturnsNull()
+    {
+        _repo.Setup(x => x.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Sighting?)null);
+
+        var result = await _svc.GetByIdAsync(Guid.NewGuid(), CancellationToken.None);
+
+        Assert.Null(result);
+    }
+
+    [Fact]
+    public async Task GetByIdAsync_IdFound_ReturnsSighting()
+    {
+        var existing = MakeSighting();
+
+        _repo.Setup(x => x.GetByIdAsync(existing.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(existing);
+
+        var result = await _svc.GetByIdAsync(existing.Id, CancellationToken.None);
+
+        Assert.NotNull(result);
+        Assert.Equal(existing.Id, result!.Id);
+        Assert.Equal(existing.BugId, result.BugId);
+        Assert.Equal(existing.UserId, result.UserId);
+        Assert.Equal(existing.Latitude, result.Latitude);
+        Assert.Equal(existing.Longitude, result.Longitude);
+        Assert.Equal(existing.SeenAt, result.SeenAt);
+        Assert.Equal(existing.Notes, result.Notes);
+
+        _repo.Verify(x => x.GetByIdAsync(existing.Id, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    #endregion
+
 }
