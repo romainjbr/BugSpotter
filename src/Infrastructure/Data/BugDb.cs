@@ -9,6 +9,8 @@ public class BugDb : DbContext
     public DbSet<Sighting> Sightings => Set<Sighting>();
     public DbSet<Bug> Bugs => Set<Bug>();
  
+    public BugDb(DbContextOptions<BugDb> options) : base(options) { }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
