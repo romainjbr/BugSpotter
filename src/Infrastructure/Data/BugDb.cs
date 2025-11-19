@@ -13,9 +13,25 @@ public class BugDb : DbContext
     {
         if (!optionsBuilder.IsConfigured)
         {
-            var dbPath = "/Users/romainrafai/Programming/2025/ASP.NETCORE/HELPDESK_1/HELP_DESK_APP_1/src/Infrastructure/bugdatabase.db";
-            Console.WriteLine($"Path is {dbPath}");
+            var dbPath = "../bugdatabase.db";
             optionsBuilder.UseSqlite($"Data Source={dbPath}");
         }         
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        var bug = modelBuilder.Entity<Bug>();
+        var sighting = modelBuilder.Entity<Sighting>();
+        var user = modelBuilder.Entity<User>();
+
+        sighting.HasOne(s => s.Bug)
+            .WithMany()
+            .HasForeignKey(s => s.BugId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        sighting.HasOne(s => s.User)
+            .WithMany()
+            .HasForeignKey(s => s.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }
