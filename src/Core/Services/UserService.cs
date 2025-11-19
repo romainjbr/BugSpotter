@@ -20,6 +20,7 @@ public class UserService : IUserService
 
     public Task<bool> DeleteAsync(Guid id, CancellationToken token)
     {
+        _logger.LogInformation("Deletion request for User with id '{UserId}'", id);
         throw new NotImplementedException();
     }
 
@@ -34,6 +35,7 @@ public class UserService : IUserService
         
         if (string.IsNullOrWhiteSpace(input))
         {
+            _logger.LogWarning("No username and no email has been input. User cannot be found");
             return null;
         }
 
@@ -58,6 +60,7 @@ public class UserService : IUserService
 
         if (foundUser is null)
         {
+            _logger.LogWarning("User cannot be found. Login failed.");
             return "";
         }
 
