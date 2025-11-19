@@ -7,7 +7,7 @@ namespace Infrastructure.Repositories;
 public class EfRepository<T> : IRepository<T> where T : class
 {
     private readonly BugDb _db;
-    
+
     public EfRepository(BugDb db)
     { 
         _db = db;
@@ -27,7 +27,7 @@ public class EfRepository<T> : IRepository<T> where T : class
 
     public async Task<T?> GetByIdAsync(Guid id, CancellationToken token)
     {
-        var item = await _db.Set<T>().FindAsync(id);
+        var item = await _db.Set<T>().FindAsync(id, token);
         return item;
     }
 
