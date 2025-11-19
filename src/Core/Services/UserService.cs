@@ -11,11 +11,13 @@ public class UserService : IUserService
 {
     private readonly ILogger<UserService> _logger;
     private readonly IUserRepository _repo;
+    private readonly ITokenService _tokenService;
 
-    public UserService(ILogger<UserService> logger, IUserRepository repo)
+    public UserService(ILogger<UserService> logger, IUserRepository repo, ITokenService tokenService)
     {
         _logger = logger;
         _repo = repo;
+        _tokenService = tokenService;
     }
 
     public Task<bool> DeleteAsync(Guid id, CancellationToken token)
@@ -52,7 +54,6 @@ public class UserService : IUserService
 
     /* TODO 
     - Implement PasswordHasherService to verify crendentials 
-    - Implement TokenService to create a return a token when login is successful
     */ 
     public async Task<string?> LoginAsync(UserLoginDto dto, CancellationToken token)
     {
@@ -64,14 +65,14 @@ public class UserService : IUserService
             return "";
         }
 
-        return "mock_token";
+        return _tokenService.CreateToken(foundUser);
     }
 
     /* TODO 
-    - Implement TokenService to create a return a token when registration is successful
+    - Implement PasswordHasherService to verify crendentials 
     */ 
     public async Task<string?> RegisterAsync(UserCreateDto dto, CancellationToken token)
-    {
-        return "mock_token";
+    {      
+        return _tokenService.CreateToken(null);
     }
 }

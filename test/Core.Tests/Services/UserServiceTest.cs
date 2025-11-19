@@ -1,6 +1,7 @@
 using Core.Dtos.Users;
 using Core.Entities;
 using Core.Interfaces.Repositories;
+using Core.Interfaces.Services;
 using Core.Services;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -11,13 +12,15 @@ public class UserServiceTests
 {
     private readonly Mock<ILogger<UserService>> _logger;
     private readonly Mock<IUserRepository> _repo;
+    private readonly Mock<ITokenService> _tokenService;
     private readonly UserService _svc;
 
     public UserServiceTests()
     {
         _logger = new Mock<ILogger<UserService>>();
         _repo = new Mock<IUserRepository>();
-        _svc = new UserService(_logger.Object, _repo.Object);
+        _tokenService = new Mock<ITokenService>();
+        _svc = new UserService(_logger.Object, _repo.Object, _tokenService.Object);
     }
 
     private static User MakeUser() => new()
