@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
-using Core.Interfaces;
+using Core.Interfaces.Services;
+using Core.Interfaces.Repositories;
 using Core.Entities;
 using Core.Dtos.Bugs;
 using Core.Dtos.Sightings;

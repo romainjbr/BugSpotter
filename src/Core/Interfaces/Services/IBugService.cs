@@ -1,6 +1,6 @@
 using Core.Dtos.Bugs;
 
-namespace Core.Interfaces; 
+namespace Core.Interfaces.Services;
 
 public interface IBugService
 {

@@ -1,7 +1,8 @@
 using Core.Entities;
 using Core.Dtos.Sightings;
 using Core.Dtos.Bugs;
-using Core.Interfaces;
+using Core.Interfaces.Services;
+using Core.Interfaces.Repositories;
 using Core.Services;
 using Microsoft.Extensions.Logging;
 using Moq;

@@ -1,7 +1,6 @@
 using Core.Dtos.Sightings;
-using Core.Entities;
 
-namespace Core.Interfaces; 
+namespace Core.Interfaces.Services;
 
 public interface ISightingService
 {
