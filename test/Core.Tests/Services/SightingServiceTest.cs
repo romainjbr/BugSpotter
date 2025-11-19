@@ -154,4 +154,98 @@ public class SightingServiceTests
 
     #endregion
 
+    #region ListAsync
+
+    [Fact]
+    public async Task ListAsync_ReturnsListOfSightings()
+    {
+        var list = new List<Sighting> { MakeSighting(), MakeSighting() };
+
+        _repo.Setup(x => x.ListAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(list);
+
+        var allSightings = await _svc.ListAsync(CancellationToken.None);
+
+        Assert.Equal(2, allSightings.Count);
+        Assert.All(allSightings, dto => Assert.Contains(list, s => s.Id == dto.Id));
+    }
+
+    #endregion
+
+    #region DeleteAsync
+
+    [Fact]
+    public async Task DeleteAsync_NotFound_ReturnsFalse_AndDoesNotDelete()
+    {
+        _repo.Setup(x => x.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Sighting?)null);
+
+        var ok = await _svc.DeleteAsync(Guid.NewGuid(), CancellationToken.None);
+
+        Assert.False(ok);
+        _repo.Verify(x => x.DeleteAsync(It.IsAny<Sighting>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task DeleteAsync_Found_ReturnsTrue_AndDeletes()
+    {
+        var existing = MakeSighting();
+
+        _repo.Setup(x => x.GetByIdAsync(existing.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(existing);
+        _repo.Setup(x => x.DeleteAsync(existing, It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        var ok = await _svc.DeleteAsync(existing.Id, CancellationToken.None);
+
+        Assert.True(ok);
+        _repo.Verify(x => x.DeleteAsync(existing, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    #endregion
+
+    #region UpdateAsync
+
+    [Fact]
+    public async Task UpdateAsync_NotFound_ReturnsFalse_AndDoesNotUpdate()
+    {
+        var dto = MakeUpdateDto(Guid.NewGuid());
+
+        _repo.Setup(x => x.GetByIdAsync(dto.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Sighting?)null);
+
+        var ok = await _svc.UpdateAsync(dto, CancellationToken.None);
+
+        Assert.False(ok);
+        _repo.Verify(x => x.UpdateAsync(It.IsAny<Sighting>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_Found_UpdatesEntityAndReturnsTrue()
+    {
+        var existing = MakeSighting();
+        var dto = MakeUpdateDto(existing.Id);
+
+        _repo.Setup(x => x.GetByIdAsync(existing.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(existing);
+
+        _repo.Setup(x => x.UpdateAsync(It.IsAny<Sighting>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        var ok = await _svc.UpdateAsync(dto, CancellationToken.None);
+
+        Assert.True(ok);
+
+        _repo.Verify(x => x.UpdateAsync(
+                It.Is<Sighting>(s =>
+                    s.Id == dto.Id &&
+                    s.Latitude == dto.Latitude &&
+                    s.Longitude == dto.Longitude &&
+                    s.SeenAt == dto.SeenAt &&
+                    s.Notes == dto.Notes),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    #endregion
 }
