@@ -13,14 +13,17 @@ public class UserServiceTests
     private readonly Mock<ILogger<UserService>> _logger;
     private readonly Mock<IUserRepository> _repo;
     private readonly Mock<ITokenService> _tokenService;
+    private readonly Mock<IPasswordHasherService> _passwordHasher;
     private readonly UserService _svc;
 
     public UserServiceTests()
     {
         _logger = new Mock<ILogger<UserService>>();
-        _repo = new Mock<IUserRepository>();
+        _repo = new Mock<IUserRepository>();    
         _tokenService = new Mock<ITokenService>();
-        _svc = new UserService(_logger.Object, _repo.Object, _tokenService.Object);
+        _passwordHasher = new Mock<IPasswordHasherService>();
+
+        _svc = new UserService(_logger.Object, _repo.Object, _tokenService.Object, _passwordHasher.Object);
     }
 
     private static User MakeUser() => new()
