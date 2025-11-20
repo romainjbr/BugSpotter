@@ -1,5 +1,3 @@
-
-
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Core.Services;
@@ -7,6 +5,7 @@ using Infrastructure.Data;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
 using Infrastructure.Settings;
+using Presentation.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,5 +38,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.MapUserEndpoints();
 
 app.Run();
