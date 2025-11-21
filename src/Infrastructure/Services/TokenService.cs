@@ -4,18 +4,20 @@ using System.Security.Claims;
 using System.Text;
 using Core.Entities;
 using Core.Interfaces.Services;
+using Infrastructure.Settings;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Infrastructure.Services;
 
 public class TokenService : ITokenService
 {
-    readonly string _key;
+    readonly JwtOptions _options;
 
-    public TokenService(IConfiguration config)
+    public TokenService(IOptions<JwtOptions> options)
     {
-        _key = config["Key"]!;
+        _options = options.Value;
     }
 
     public string CreateToken(User user)
@@ -32,13 +34,13 @@ public class TokenService : ITokenService
             claims.Add(new(ClaimTypes.Role, claim));
         }
 
-        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_key));
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Key!));
         var creds = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(
 
             claims: claims,
-            expires: DateTime.UtcNow.Add(TimeSpan.FromHours(1)),
+            expires: DateTime.UtcNow.Add(TimeSpan.FromHours(_options.ExpirationMinutes!)),
             notBefore: DateTime.UtcNow,
             signingCredentials: creds);
 

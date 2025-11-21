@@ -2,24 +2,25 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Core.Entities;
 using Infrastructure.Services;
+using Infrastructure.Settings;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace Infrastructure.Tests.Services;
 
 public class TokenServiceTests
 {
     readonly TokenService _svc;
-    readonly string _key = "example_of_secret_key_tokenservice_tests";
+    
     public TokenServiceTests()
     {
-        var config = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["Key"] = _key
-            })
-            .Build();
+        var jwtOptions = Options.Create(new JwtOptions
+        {
+           Key = "example_of_secret_key_tokenservice_tests",
+           ExpirationMinutes = 60 
+        });
 
-        _svc = new TokenService(config);        
+        _svc = new TokenService(jwtOptions);        
     }
 
     private User MakeUser() => new()
