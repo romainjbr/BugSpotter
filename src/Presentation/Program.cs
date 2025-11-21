@@ -18,7 +18,7 @@ builder.Services.AddDbContext<BugDb>();
 
 //Repositories
 builder.Services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
-builder.Services.AddScoped<IUserRepository, IUserRepository>();
+builder.Services.AddScoped<IUserRepository, EfUserRepository>();
 
 //Core Services
 builder.Services.AddScoped<IUserService, UserService>();
