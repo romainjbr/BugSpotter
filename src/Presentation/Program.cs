@@ -28,6 +28,8 @@ builder.Services.AddScoped<IBugService, BugService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
 
+builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -42,3 +44,5 @@ app.UseHttpsRedirection();
 app.MapUserEndpoints();
 
 app.Run();
+
+public partial class Program { }
