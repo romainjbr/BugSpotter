@@ -42,6 +42,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.MapUserEndpoints();
+app.MapBugEndpoints();
+app.MapSightingEndpoints();
 
 app.Run();
 
