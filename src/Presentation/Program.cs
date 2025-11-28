@@ -6,12 +6,15 @@ using Infrastructure.Repositories;
 using Infrastructure.Services;
 using Infrastructure.Settings;
 using Presentation.Endpoints;
+using Presentation.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
+
+builder.Services.AddJwtAuth(builder.Configuration);
 
 builder.Services.AddDbContext<BugDb>();
 
