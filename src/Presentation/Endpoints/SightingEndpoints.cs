@@ -44,8 +44,8 @@ public static class SightingEndpoints
 
         group.MapPut("/{id}", async Task<Ok<string>> (ISightingService svc, SightingUpdateDto dto, Guid id, CancellationToken token) =>
         {
-            var bug = dto with { Id = id };
-            var result = await svc.UpdateAsync(dto, token);
+            var sighting = dto with { Id = id };
+            var result = await svc.UpdateAsync(sighting, token);
             return TypedResults.Ok("Sighting updated.");
         });
 
