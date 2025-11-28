@@ -139,6 +139,7 @@ public class BugEndpointsTests : IClassFixture<WebApplicationFactory<Program>>
     [Fact]
     public async Task Update_WhenCalled_UsesRouteIdAndReturnsOk()
     {
+        var routeId = Guid.NewGuid();
         var bodyId = Guid.NewGuid();
         
         var updateDto = new BugUpdateDto(bodyId, "Bee", 2, "Buzzes");
@@ -146,16 +147,16 @@ public class BugEndpointsTests : IClassFixture<WebApplicationFactory<Program>>
         _svc.Setup(s => s.UpdateAsync(It.IsAny<BugUpdateDto>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
 
-        var response = await _client.PutAsJsonAsync($"/bug/{bodyId}", updateDto);
+        var response = await _client.PutAsJsonAsync($"/bug/{routeId}", updateDto);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         var message = await response.Content.ReadAsStringAsync();
-        Assert.Contains($"Bug {bodyId} updated.", message);
+        Assert.Contains($"Bug {routeId} updated.", message);
 
         _svc.Verify(s => s.UpdateAsync(
                 It.Is<BugUpdateDto>(b =>
-                    b.Id == bodyId &&
+                    b.Id == routeId &&
                     b.Species == updateDto.Species &&
                     b.DangerLevel == updateDto.DangerLevel &&
                     b.Description == updateDto.Description),

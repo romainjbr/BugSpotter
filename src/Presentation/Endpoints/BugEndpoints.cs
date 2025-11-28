@@ -41,7 +41,7 @@ public static class BugEndpoints
         group.MapPut("/{id}", async Task<Ok<string>> (IBugService svc, BugUpdateDto dto, Guid id, CancellationToken token) =>
         {
             var bug = dto with { Id = id };
-            var result = await svc.UpdateAsync(dto, token);
+            var result = await svc.UpdateAsync(bug, token);
             return TypedResults.Ok($"Bug {id} updated.");
         });
 
