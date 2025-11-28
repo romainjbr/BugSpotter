@@ -1,5 +1,3 @@
-
-
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Core.Services;
@@ -7,6 +5,7 @@ using Infrastructure.Data;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
 using Infrastructure.Settings;
+using Presentation.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +28,8 @@ builder.Services.AddScoped<IBugService, BugService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
 
+builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -40,4 +41,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.MapUserEndpoints();
+app.MapBugEndpoints();
+app.MapSightingEndpoints();
+
 app.Run();
+
+public partial class Program { }
