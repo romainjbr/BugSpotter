@@ -6,7 +6,7 @@ namespace Infrastructure.Repositories;
 
 public class EfRepository<T> : IRepository<T> where T : class
 {
-    private readonly BugDb _db;
+    protected readonly BugDb _db;
 
     public EfRepository(BugDb db)
     { 
