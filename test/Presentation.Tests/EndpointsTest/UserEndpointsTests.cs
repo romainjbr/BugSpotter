@@ -19,6 +19,13 @@ public class UserEndpointsTests : IClassFixture<WebApplicationFactory<Program>>
         _svc = new Mock<IUserService>();
     }
 
+    private UserCreateDto MakeCreateDto()
+    {
+        var roles = new string[] { "User" };
+        return new("romain", "romain@deutschlad.com", "passWord12", roles);
+    }
+
+
     [Fact]
     public async Task Register_WhenServiceReturnsEmptyString_ReturnsConflict()
     {
@@ -33,7 +40,7 @@ public class UserEndpointsTests : IClassFixture<WebApplicationFactory<Program>>
             });
         }).CreateClient();
 
-        var dto = new UserCreateDto("romain", "romain@deutschlad.com", "passWord12!");
+        var dto = MakeCreateDto();
 
         var response = await client.PostAsJsonAsync("/user/register", dto);
 
@@ -56,7 +63,7 @@ public class UserEndpointsTests : IClassFixture<WebApplicationFactory<Program>>
             });
         }).CreateClient();
 
-        var dto = new UserCreateDto("romain", "romain@deutschlad.com", "passWord12!");
+        var dto = MakeCreateDto();
 
         var response = await client.PostAsJsonAsync("/user/register", dto);
         var value = await response.Content.ReadFromJsonAsync<string>();

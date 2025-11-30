@@ -39,7 +39,7 @@ public static class UserEndpoints
             var allUsers = await svc.ListAsync(token);
 
             return TypedResults.Ok(allUsers);
-        }).RequireAuthorization();
+        }).RequireAuthorization("Admin");
         
        return routes;
     }
