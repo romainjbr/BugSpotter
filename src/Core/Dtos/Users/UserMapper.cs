@@ -6,7 +6,7 @@ public static class UserMapper
 {
     public static UserReadDto ToDto(this User user)
     {
-        return new UserReadDto(user.Id, user.Email, user.UserName, user.HashedPassword);
+        return new UserReadDto(user.Id, user.Email, user.UserName, user.HashedPassword, user.Roles);
     }
 
     public static User ToEntity(this UserCreateDto dto)
@@ -16,7 +16,8 @@ public static class UserMapper
             Id = Guid.NewGuid(),
             UserName = dto.Username,
             Email = dto.Email,
-            HashedPassword = dto.Password
+            HashedPassword = dto.Password,
+            Roles = dto.Roles
         };
     }    
 }
