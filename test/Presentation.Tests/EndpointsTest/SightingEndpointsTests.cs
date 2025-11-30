@@ -2,9 +2,13 @@ using System.Net;
 using System.Net.Http.Json;
 using Core.Dtos.Sightings;
 using Core.Interfaces.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using Presentation.Tests.AuthenticationHelper;
+
+namespace Presentations.Test.EndpointTests;
 
 public class SightingEndpointsTests : IClassFixture<WebApplicationFactory<Program>>
 {
@@ -25,6 +29,7 @@ public class SightingEndpointsTests : IClassFixture<WebApplicationFactory<Progra
         {
             builder.ConfigureServices(services =>
             {
+                services.AddAuthentication("Test").AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", options => { });
                 services.AddSingleton<ISightingService>(_svc.Object);
             });
         }).CreateClient();

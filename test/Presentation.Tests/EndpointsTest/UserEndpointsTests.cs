@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 
+namespace Presentations.Test.EndpointTests;
+
 public class UserEndpointsTests : IClassFixture<WebApplicationFactory<Program>>
 {
     private readonly WebApplicationFactory<Program> _factory;
@@ -31,7 +33,7 @@ public class UserEndpointsTests : IClassFixture<WebApplicationFactory<Program>>
             });
         }).CreateClient();
 
-        var dto = new UserCreateDto("romain", "romain@deutschlad.com", "passWord12!");
+        var dto = new UserCreateDto("romain", "romain@deutschlad.com", "passWord12!", default);
 
         var response = await client.PostAsJsonAsync("/user/register", dto);
 
@@ -54,7 +56,7 @@ public class UserEndpointsTests : IClassFixture<WebApplicationFactory<Program>>
             });
         }).CreateClient();
 
-        var dto = new UserCreateDto("romain", "romain@deutschlad.com", "passWord12!");
+        var dto = new UserCreateDto("romain", "romain@deutschlad.com", "passWord12!", default);
 
         var response = await client.PostAsJsonAsync("/user/register", dto);
         var value = await response.Content.ReadFromJsonAsync<string>();
