@@ -49,6 +49,8 @@ public static class SightingEndpoints
             return TypedResults.Ok("Sighting updated.");
         });
 
+        group.RequireAuthorization();
+
         return group;
     }
 }

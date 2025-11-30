@@ -34,7 +34,6 @@ public static class UserEndpoints
             return TypedResults.Ok(receivedToken);
         });
 
-        // TODO: Implemet Authorization/Authentication and make this method accessible for authorized users only
         group.MapGet("/all", async Task<Results<Ok<List<UserReadDto>>, UnauthorizedHttpResult>> (IUserService svc, CancellationToken token) =>
         {
             var allUsers = await svc.ListAsync(token);
