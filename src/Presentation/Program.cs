@@ -6,12 +6,15 @@ using Infrastructure.Repositories;
 using Infrastructure.Services;
 using Infrastructure.Settings;
 using Presentation.Endpoints;
+using Presentation.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
+
+builder.Services.AddJwtAuth(builder.Configuration);
 
 builder.Services.AddDbContext<BugDb>();
 
@@ -28,7 +31,7 @@ builder.Services.AddScoped<IBugService, BugService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IPasswordHasherService, PasswordHasherService>();
 
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerWithJwt();
 
 var app = builder.Build();
 
@@ -38,6 +41,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseHttpsRedirection();
 

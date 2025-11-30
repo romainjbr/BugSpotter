@@ -3,9 +3,13 @@ using System.Net.Http.Json;
 using Core.Dtos.Bugs;
 using Core.Dtos.Users;
 using Core.Interfaces.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using Presentation.Tests.AuthenticationHelper;
+
+namespace Presentations.Test.EndpointTests;
 
 public class BugEndpointsTests : IClassFixture<WebApplicationFactory<Program>>
 {
@@ -27,6 +31,7 @@ public class BugEndpointsTests : IClassFixture<WebApplicationFactory<Program>>
         {
             builder.ConfigureServices(services =>
             {
+                 services.AddAuthentication("Test").AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", options => { });
                 services.AddSingleton<IBugService>(_svc.Object);
             });
         }).CreateClient();

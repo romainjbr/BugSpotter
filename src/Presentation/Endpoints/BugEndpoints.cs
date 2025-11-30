@@ -45,6 +45,8 @@ public static class BugEndpoints
             return TypedResults.Ok($"Bug {id} updated.");
         });
 
+        group.RequireAuthorization();
+
         return group;
     }
 }
