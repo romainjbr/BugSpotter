@@ -33,7 +33,7 @@ public class UserEndpointsTests : IClassFixture<WebApplicationFactory<Program>>
             });
         }).CreateClient();
 
-        var dto = new UserCreateDto("romain", "romain@deutschlad.com", "passWord12!", default);
+        var dto = new UserCreateDto("romain", "romain@deutschlad.com", "passWord12!");
 
         var response = await client.PostAsJsonAsync("/user/register", dto);
 
@@ -56,7 +56,7 @@ public class UserEndpointsTests : IClassFixture<WebApplicationFactory<Program>>
             });
         }).CreateClient();
 
-        var dto = new UserCreateDto("romain", "romain@deutschlad.com", "passWord12!", default);
+        var dto = new UserCreateDto("romain", "romain@deutschlad.com", "passWord12!");
 
         var response = await client.PostAsJsonAsync("/user/register", dto);
         var value = await response.Content.ReadFromJsonAsync<string>();
