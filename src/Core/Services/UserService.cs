@@ -51,7 +51,7 @@ public class UserService : IUserService
     
     public async Task<List<UserReadDto>> ListAsync(CancellationToken token)
     {
-        var allUsers = await _repo.GetAllUser(token);
+        var allUsers = await _repo.ListAsync(token);
         return allUsers.Select(x => x.ToDto()).ToList();
     }
 
@@ -76,7 +76,7 @@ public class UserService : IUserService
         var user = dto.ToEntity();
         user.HashedPassword = hashedPassword;
 
-        await _repo.AddUserAsync(user, token);
+        await _repo.AddAsync(user, token);
 
         _logger.LogWarning("Register for user {UserId} successfull", user.Id);
         return _tokenService.CreateToken(user);

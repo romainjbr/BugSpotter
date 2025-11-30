@@ -106,7 +106,7 @@ public class UserServiceTests
     {
         var list = new List<User> { MakeUser(), MakeUser() };
 
-        _repo.Setup(x => x.GetAllUser(It.IsAny<CancellationToken>()))
+        _repo.Setup(x => x.ListAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(list);
 
         var result = await _svc.ListAsync(CancellationToken.None);
