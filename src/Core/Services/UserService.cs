@@ -59,7 +59,7 @@ public class UserService : IUserService
     {
         var foundUser = await FindUserAsync(dto, token);
 
-        if (foundUser is null || _passwordHasher.VerifyCredentials(dto.Password, foundUser.HashedPassword)) 
+        if (foundUser is null || !_passwordHasher.VerifyCredentials(dto.Password, foundUser.HashedPassword)) 
         {
             _logger.LogWarning("User or password incorrect. Login failed.");
             return "";
